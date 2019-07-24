@@ -1,7 +1,7 @@
-ember-rdfa-editor-address-plugin
+@lblod/ember-rdfa-editor-address-plugin
 ==============================================================================
 
-[Short description of the addon.]
+RDFa editor plugin to insert an address in the editor.
 
 
 Compatibility
@@ -16,7 +16,7 @@ Installation
 ------------------------------------------------------------------------------
 
 ```
-ember install ember-rdfa-editor-address-plugin
+ember install @lblod/ember-rdfa-editor-address-plugin
 ```
 
 
