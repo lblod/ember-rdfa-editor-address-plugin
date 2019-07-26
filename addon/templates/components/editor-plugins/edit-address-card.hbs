@@ -1,0 +1,32 @@
+<div class="modal-dialog__header">
+	<div class="grid">
+	  <div class="col--10-12">
+	    <p>
+				Wil u graag het adres <strong>{{info.currentAddress.fullAddress}}</strong> wijzigen:
+	    </p>
+	  </div>
+	</div>
+</div>
+
+<div class="modal-dialog__link-list">
+	<div class="grid">
+    <div>
+      <Input @value={{searchText}} @key-up={{perform search}} @placeholder="Adres" />
+    </div>
+
+    {{#if search.isRunning}}
+      <div>Aan het zoeken...</div>
+    {{else if search.lastSuccessful}}
+      {{#each search.lastSuccessful.value as |suggestion|}}
+        <div>
+          {{suggestion.fullAddress}}
+          <WuButton @label="Invoegen" @onClick={{perform updateAddress suggestion}} @size="small" @isNarrow="true" @isLink="true" />
+        </div>
+      {{/each}}
+    {{/if}}
+
+    <div>
+      <WuButton @label="Uitgebreid zoeken" @onClick={{action "openAdvancedSearch"}} @size="small" />
+    </div>
+	</div>
+</div>
