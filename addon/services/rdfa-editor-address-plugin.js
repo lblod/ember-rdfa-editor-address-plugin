@@ -52,24 +52,27 @@ const RdfaEditorAddressPlugin = Service.extend({
   generateHintsToEditAddress(hrId, rdfaBlocks, hintsRegistry, editor) {
     const who = this.who;
 
-    function isRelevantContext(rdfaBlock) {
-      return rdfaBlock.semanticNode.rdfaAttributes &&
-        rdfaBlock.semanticNode.rdfaAttributes.typeof == 'https://data.vlaanderen.be/ns/adres#Adres';
+    const semanticNodes = rdfaBlocks.map(block => block.semanticNode);
+    const uniqueSemanticNodes = [...new Set(semanticNodes)];
+
+    function isRelevantContext(richNode) {
+      return richNode.rdfaAttributes &&
+        richNode.rdfaAttributes.typeof == 'https://data.vlaanderen.be/ns/adres#Adres';
     }
 
-    function generateCard(rdfaBlock) {
+    function generateCard(richNode) {
       return EmberObject.create({
         info: {
           currentAddress: {
-            uri: rdfaBlock.semanticNode.rdfaAttributes.resource,
-            fullAddress: rdfaBlock.text
+            uri: richNode.rdfaAttributes.resource,
+            fullAddress: richNode.domNode.innerText
           },
-          location: rdfaBlock.region,
+          location: richNode.region,
           who: who,
           hrId, hintsRegistry, editor
         },
 
-        location: rdfaBlock.region,
+        location: richNode.region,
         options: {
           noHighlight: true
         },
@@ -78,10 +81,10 @@ const RdfaEditorAddressPlugin = Service.extend({
     }
 
     const cards = [];
-    rdfaBlocks.forEach((rdfaBlock) => {
-      if (isRelevantContext(rdfaBlock)) {
-        hintsRegistry.removeHintsInRegion(rdfaBlock.region, hrId, this.who);
-        cards.push(generateCard(rdfaBlock));
+    uniqueSemanticNodes.forEach((richNode) => {
+      if (isRelevantContext(richNode)) {
+        hintsRegistry.removeHintsInRegion(richNode.region, hrId, this.who);
+        cards.push(generateCard(richNode));
       }
     });
     return cards;
