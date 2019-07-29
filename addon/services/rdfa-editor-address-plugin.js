@@ -43,6 +43,7 @@ const RdfaEditorAddressPlugin = Service.extend({
 
     const cards = [];
     cards.pushObjects(this.generateHintsToEditAddress(hrId, rdfaBlocks, hintsRegistry, editor));
+    cards.pushObjects(this.generateHintsOnTyping(hrId, rdfaBlocks, hintsRegistry, editor));
 
     if(cards.length > 0){
       hintsRegistry.addHints(hrId, this.who, cards);
@@ -83,8 +84,51 @@ const RdfaEditorAddressPlugin = Service.extend({
     const cards = [];
     uniqueSemanticNodes.forEach((richNode) => {
       if (isRelevantContext(richNode)) {
-        hintsRegistry.removeHintsInRegion(richNode.region, hrId, this.who);
+        hintsRegistry.removeHintsInRegion(richNode.region, hrId, who);
         cards.push(generateCard(richNode));
+      }
+    });
+    return cards;
+  },
+
+  generateHintsOnTyping(hrId, rdfaBlocks, hintsRegistry, editor) {
+    const who = this.who;
+    const triggerWord = 'op de ';
+
+    function isRelevantContext(rdfaBlock) {
+      if (rdfaBlock.text && rdfaBlock.text.toLowerCase().indexOf(triggerWord) >= 0) {
+         // TODO update RDF class
+        return rdfaBlock.context.find(t => t.predicate == 'a' && t.object == 'http://data.vlaanderen.be/ns/besluit#Besluit');
+      }
+      return null;
+    }
+
+    function generateCard(rdfaBlock) {
+      // TODO add to RDFa block class in Marawa
+      rdfaBlock.normalizeRegion = function([relativeStart, relativeEnd]){
+        return [this.start + relativeStart, this.start + relativeEnd];
+      };
+
+      const index = rdfaBlock.text.toLowerCase().indexOf(triggerWord) + triggerWord.length;
+      const text = rdfaBlock.text.slice(index).trim();
+      const location = rdfaBlock.normalizeRegion([index, index + text.length]);
+
+      return EmberObject.create({
+        info: {
+          searchText: text,
+          who, location, hrId, hintsRegistry, editor
+        },
+
+        location,
+        card: 'editor-plugins/autocomplete-address-card'
+      });
+    }
+
+    const cards = [];
+    rdfaBlocks.forEach((rdfaBlock) => {
+      if (isRelevantContext(rdfaBlock)) {
+        hintsRegistry.removeHintsInRegion(rdfaBlock.region, hrId, who);
+        cards.push(generateCard(rdfaBlock));
       }
     });
     return cards;

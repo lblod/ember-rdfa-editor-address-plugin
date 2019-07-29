@@ -1,0 +1,15 @@
+<div class="modal-dialog__header">
+	<div class="grid">
+	  <div class="col--10-12">
+	    <p>
+				Wil u graag een adres invoegen:
+	    </p>
+	  </div>
+	</div>
+</div>
+
+<div class="modal-dialog__link-list">
+	<div class="grid">
+    <EditorPlugins::AddressSearch @onInsert={{action "insertAddressInEditor"}} @searchText={{searchText}} />
+	</div>
+</div>

@@ -1,8 +1,9 @@
 import Component from '@ember/component';
 import layout from '../../templates/components/editor-plugins/address-search';
 import { inject as service } from '@ember/service';
-import { task, timeout } from 'ember-concurrency';
+import { reads } from '@ember/object/computed';
 import { warn } from '@ember/debug';
+import { task, timeout } from 'ember-concurrency';
 
 export default Component.extend({
   layout,
@@ -11,8 +12,15 @@ export default Component.extend({
 
   onInsert: null,
 
+  init() {
+    this._super(...arguments);
+
+    if (this.searchText)
+      this.search.perform(this.searchText);
+  },
+
   search: task(function * (searchText) {
-    this.set('searchText', searchText);
+    this.set('internalSearchText', searchText);
     yield timeout(1000);
     const addresses = yield this.addressregister.suggest(searchText);
     return addresses;
