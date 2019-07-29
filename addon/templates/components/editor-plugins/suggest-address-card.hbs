@@ -13,22 +13,5 @@
   </div>
 </div>
 <div class="modal-dialog__content modal-dialog__content--sectioned">
-  <div>
-    <Input @value={{searchText}} @key-up={{perform search}} @placeholder="Adres" />
-  </div>
-
-  {{#if search.isRunning}}
-    <div>Aan het zoeken...</div>
-  {{else if search.lastSuccessful}}
-    {{#each search.lastSuccessful.value as |suggestion|}}
-      <div>
-        {{suggestion.fullAddress}}
-        <WuButton @label="Invoegen" @onClick={{perform insertAddress suggestion}} @size="small" @isNarrow="true" @isLink="true" />
-      </div>
-    {{/each}}
-  {{/if}}
-
-  <div>
-    <WuButton @label="Uitgebreid zoeken" @onClick={{action "openAdvancedSearch"}} @size="small" />
-  </div>
+  <EditorPlugins::AddressSearch @onInsert={{action "insertAddressAtCurrentSelection"}} />
 </div>

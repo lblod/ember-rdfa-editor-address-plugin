@@ -38,7 +38,7 @@ const RdfaEditorAddressPlugin = Service.extend({
    *
    * @public
    */
-  execute: task(function * (hrId, rdfaBlocks, hintsRegistry, editor) {
+  execute: task(function * (hrId, rdfaBlocks, hintsRegistry, editor) { // eslint-disable-line require-yield
     if (rdfaBlocks.length === 0) return;
 
     const cards = [];
