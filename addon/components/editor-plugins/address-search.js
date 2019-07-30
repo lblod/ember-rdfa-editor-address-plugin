@@ -1,7 +1,6 @@
 import Component from '@ember/component';
 import layout from '../../templates/components/editor-plugins/address-search';
 import { inject as service } from '@ember/service';
-import { reads } from '@ember/object/computed';
 import { warn } from '@ember/debug';
 import { task, timeout } from 'ember-concurrency';
 

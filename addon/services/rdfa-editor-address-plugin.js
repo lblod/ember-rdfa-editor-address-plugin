@@ -44,12 +44,17 @@ const RdfaEditorAddressPlugin = Service.extend({
     const cards = [];
     cards.pushObjects(this.generateHintsToEditAddress(hrId, rdfaBlocks, hintsRegistry, editor));
     cards.pushObjects(this.generateHintsOnTyping(hrId, rdfaBlocks, hintsRegistry, editor));
+    cards.pushObjects(this.generateHintsOnInstructive(hrId, rdfaBlocks, hintsRegistry, editor));
 
-    if(cards.length > 0){
+    if (cards.length > 0){
       hintsRegistry.addHints(hrId, this.who, cards);
     }
   }),
 
+  /**
+   * Show hints to edit existing addresses
+   * Existing addresses are nodes annotated with 'typeof=adres:Adres'
+  */
   generateHintsToEditAddress(hrId, rdfaBlocks, hintsRegistry, editor) {
     const who = this.who;
 
@@ -69,8 +74,7 @@ const RdfaEditorAddressPlugin = Service.extend({
             fullAddress: richNode.domNode.innerText
           },
           location: richNode.region,
-          who: who,
-          hrId, hintsRegistry, editor
+          who, hrId, hintsRegistry, editor
         },
 
         location: richNode.region,
@@ -91,6 +95,11 @@ const RdfaEditorAddressPlugin = Service.extend({
     return cards;
   },
 
+  /**
+   * Show hints on the text input entered by the user
+   * Hints are shown in case:
+   * - the user types 'op de ' in the context of besluit:Besluit
+  */
   generateHintsOnTyping(hrId, rdfaBlocks, hintsRegistry, editor) {
     const who = this.who;
     const triggerWord = 'op de ';
@@ -129,6 +138,47 @@ const RdfaEditorAddressPlugin = Service.extend({
       if (isRelevantContext(rdfaBlock)) {
         hintsRegistry.removeHintsInRegion(rdfaBlock.region, hrId, who);
         cards.push(generateCard(rdfaBlock));
+      }
+    });
+    return cards;
+  },
+
+  /**
+   * Show hints on an instructive that indicates an address must be entered.
+   * The instructive node will be used to set annotations on.
+   * Currently supported instructives are:
+   * - property=ext:insertAddress
+  */
+  generateHintsOnInstructive(hrId, rdfaBlocks, hintsRegistry, editor) {
+    const who = this.wo;
+    const instructive = 'http://mu.semte.ch/vocabularies/ext/insertAddress';
+
+    const semanticNodes = rdfaBlocks.map(block => block.semanticNode);
+    const uniqueSemanticNodes = [...new Set(semanticNodes)];
+
+    function isRelevantContext(richNode) {
+      return richNode.rdfaAttributes &&
+        richNode.rdfaAttributes.property == instructive;
+    }
+
+    function generateCard(richNode) {
+      return EmberObject.create({
+        info: {
+          instructive,
+          location: richNode.region,
+          who, hrId, hintsRegistry, editor
+        },
+
+        location: richNode.region,
+        card: 'editor-plugins/insert-address-card'
+      });
+    }
+
+    const cards = [];
+    uniqueSemanticNodes.forEach((richNode) => {
+      if (isRelevantContext(richNode)) {
+        hintsRegistry.removeHintsInRegion(richNode.region, hrId, who);
+        cards.push(generateCard(richNode));
       }
     });
     return cards;
