@@ -14,7 +14,8 @@ export default Component.extend({
 
   actions: {
     insertAddressInEditor: function (address) {
-      const selection = this.editor.selectContext(this.location, {
+      let updatedLocation = this.get('hintsRegistry').updateLocationToCurrentIndex(this.get('hrId'), this.get('location'));
+      const selection = this.editor.selectContext(updatedLocation, {
         property: this.instructive
       });
       this.editor.update(selection, {
