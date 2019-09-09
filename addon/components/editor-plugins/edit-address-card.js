@@ -14,7 +14,8 @@ export default Component.extend({
 
   actions: {
     updateAddressInEditor: function (address) {
-      const selection = this.editor.selectContext(this.location, {
+      let updatedLocation = this.get('hintsRegistry').updateLocationToCurrentIndex(this.get('hrId'), this.get('location'));
+      const selection = this.editor.selectContext(updatedLocation, {
         resource: this.currentAddress.uri,
         typeof: 'https://data.vlaanderen.be/ns/adres#Adres'
       });
