@@ -14,7 +14,8 @@ export default Component.extend({
 
   actions: {
     insertAddressInEditor: function (address) {
-      const selection = this.editor.selectHighlight(this.location);
+      let updatedLocation = this.get('hintsRegistry').updateLocationToCurrentIndex(this.get('hrId'), this.get('location'));
+      const selection = this.editor.selectHighlight(updatedLocation);
       this.editor.update(selection, {
         set: { // TODO 'add' should be better than 'set' once Pernet API supports innerHTML on 'add'
           typeof: 'https://data.vlaanderen.be/ns/adres#Adres',
