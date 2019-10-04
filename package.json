@@ -1,6 +1,6 @@
 {
   "name": "@lblod/ember-rdfa-editor-address-plugin",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "RDFa editor plugin to insert an address in the editor.",
   "keywords": [
     "ember-addon"
